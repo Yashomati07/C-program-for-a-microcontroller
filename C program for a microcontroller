@@ -1,0 +1,84 @@
+#include <stdio.h>
+#include <string.h>
+
+// Define structure for color
+typedef struct {
+    int red;
+    int green;
+    int blue;
+} Color;
+
+// Define structure for individual LED control
+typedef struct {
+    int state;      // 0: OFF, 1: ON
+    int brightness; // Brightness level from 0 to 255
+    Color color;    // RGB color of the LED
+} LED;
+
+// Define structure for group of LEDs
+typedef struct {
+    LED leds[10];       // Assume a group can control up to 10 LEDs
+    int totalLEDs;      // Number of LEDs in the group
+} LEDGroup;
+
+// Function to initialize an LED
+void initializeLED(LED *led, int state, int brightness, int red, int green, int blue) {
+    led->state = state;
+    led->brightness = brightness;
+    led->color.red = red;
+    led->color.green = green;
+    led->color.blue = blue;
+}
+
+// Function to control a group of LEDs (turn ON/OFF all, set brightness, or color)
+void controlLEDGroup(LEDGroup *group, int state, int brightness, int red, int green, int blue) {
+    for (int i = 0; i < group->totalLEDs; i++) {
+        group->leds[i].state = state;
+        group->leds[i].brightness = brightness;
+        group->leds[i].color.red = red;
+        group->leds[i].color.green = green;
+        group->leds[i].color.blue = blue;
+    }
+}
+
+// Function to display the state of a single LED
+void displayLEDState(LED *led) {
+    printf("State: %s\n", led->state ? "ON" : "OFF");
+    printf("Brightness: %d\n", led->brightness);
+    printf("Color: RGB(%d, %d, %d)\n", led->color.red, led->color.green, led->color.blue);
+}
+
+// Function to display the state of a group of LEDs
+void displayLEDGroupState(LEDGroup *group) {
+    for (int i = 0; i < group->totalLEDs; i++) {
+        printf("LED %d:\n", i + 1);
+        displayLEDState(&group->leds[i]);
+        printf("\n");
+    }
+}
+
+int main() {
+    // Initialize a group of LEDs
+    LEDGroup group;
+    group.totalLEDs = 5;  // Set up a group of 5 LEDs
+
+    // Initialize individual LEDs with different colors and brightness
+    initializeLED(&group.leds[0], 1, 255, 255, 0, 0); // Red
+    initializeLED(&group.leds[1], 1, 200, 0, 255, 0); // Green
+    initializeLED(&group.leds[2], 0, 150, 0, 0, 255); // Blue (OFF)
+    initializeLED(&group.leds[3], 1, 100, 255, 255, 0); // Yellow
+    initializeLED(&group.leds[4], 1, 50, 0, 255, 255);  // Cyan
+
+    // Display initial states of LEDs in the group
+    printf("Initial LED Group State:\n");
+    displayLEDGroupState(&group);
+
+    // Control the entire group (turn OFF all, set brightness to 128, change color to white)
+    controlLEDGroup(&group, 0, 128, 255, 255, 255);
+
+    // Display the state of LEDs after controlling the group
+    printf("LED Group State After Update:\n");
+    displayLEDGroupState(&group);
+
+    return 0;
+}
